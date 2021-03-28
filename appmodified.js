@@ -63,15 +63,20 @@ async function findMatches(userID) {
 		var random = Math.floor(Math.random() * count)
 		  
 		// Again query all users but only fetch one offset by our random #
-		newUser = await User.findOne().skip(random)
+		var newUser = await User.findOne().skip(random)
 		  
-        if (newUser.nickname != userID && !containsMeme(newUser, users)) {
+        if (newUser.nickname != userID && !containsMatch(newUser, users)) {
 				
             users.push(newUser)
         }
     }
     var maxUser = null;
     let maxPoints = -1;
+
+	if (typeof user == 'undefined') {
+		return null
+	}
+	
 	
 	for (var i=0; i<users.length; i++) {
 		var potentialUser = users[i]
@@ -83,8 +88,9 @@ async function findMatches(userID) {
             points = -10000;
        	} else {
 			//Check for common liked memes
-
+			
 			for (var j=0; j<potentialUser.likedMemes.length; j++) {
+				console.log(user)
 				if (containsMeme(potentialUser.likedMemes[j], user.likedMemes)) {
 					points++;
 				} else if (containsMeme(potentialUser.likedMemes[j], user.dislikedMemes)){
@@ -106,7 +112,12 @@ async function findMatches(userID) {
 			}
 		}   
 	}
-   return maxUser.nickname;
+	if (maxUser == null) {
+		return null
+	} else {
+		return maxUser.nickname;
+	}
+   
 }
 
 async function addreaction(userID, memeID, like) {
