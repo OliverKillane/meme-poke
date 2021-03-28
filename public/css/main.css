@@ -1,0 +1,29 @@
+
+.ui.visible.message.partner {
+	background: #DCDCDC;
+	color: black;
+	background: #808080;
+	color: white;
+	padding: 5px 10px;
+	margin: 0;
+	word-wrap: break-word;
+}
+
+.ui.visible.message.self {
+	background: #DCDCDC;
+	color: black;
+	padding: 5px 10px;
+	margin: 0;
+	word-wrap: break-word;
+}
+
+
+.ui.middle.aligned.divided.list {
+	max-height: 400px;
+	overflow-y: auto;
+	scroll-behavior: smooth;
+}
+
+.invisible {
+	display: none;
+}

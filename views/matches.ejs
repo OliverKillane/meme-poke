@@ -1,0 +1,27 @@
+<% include ./partials/header %>
+	
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+<body>
+	<% include ./partials/menu %>
+	<div class="ui main text container segment">
+
+		<h1 class="ui header">Talk to your matches!</h1>
+		
+		<a class="ui fluid button" href="/getNewMatch">Get a new match</a>
+
+		<div class="ui middle aligned divided list">
+			<% for(var i=0; i < matches.length; i++) { %>
+				<div class="ui visible message self"> <a href="/conversations/<%= matches[i] %>" class="content"><%= matches[i] %></a></div>
+			 <% } %>
+				
+			
+		</div>
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	crossorigin="anonymous"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+	<script type="text/javascript" src="js/conversation.js"></script>
+<% include ./partials/footer %>

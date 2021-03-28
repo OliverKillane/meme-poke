@@ -1,0 +1,79 @@
+<% include ./partials/header %>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+<script>
+    var socket = null
+    if (socket) {
+        socket.disconnect();
+    }
+    var socket = io({ query: "username=<%= username %>" });
+
+    var prompts = 
+    [
+        "Bruh does this meme even bosch?",
+        "Yo is there meme cheese or what?",
+        "Hey honey, this meme vibe w/ you?",
+        "Holy clackson, aint jimmy cricket spite this meme?",
+        "mackrel almighty, is this meme (Good/dreary) or what?",
+        "Arr, well cap'n is this meme it?",
+        "Corr blimey this meme is...",
+        "Dont even sweat dog, you vibe with this meme or naw?",
+        "Opinions on this meme sir/madam?"
+    ]
+
+
+    // update prompt
+    $( document ).ready(function() {
+        document.getElementById("prompt").innerHTML = getRandomIndex(prompts)
+        socket.emit("getNewMeme")
+    })
+
+    // get random element utility
+    function getRandomIndex(items){
+        return items[Math.floor(Math.random() * items.length)]
+    }
+
+
+    //USER INTERACTION:
+    // set Image to url
+	socket.on('postNewMeme', function(url) {
+        console.log(url)
+        $("#memeimage").attr("src", url);
+	});
+
+
+    // emit a reaction to the socket
+    function react(reaction){
+        if (socket.connected) {
+            //emit like or dislike meme
+            socket.emit("reactToMeme", {memeID: $("#memeimage").attr("src"), reaction: reaction})
+            $("#memeimage").attr("src", "");
+            // // emit client now ready for a new meme
+            socket.emit("getNewMeme")
+        }
+    }
+
+</script>
+
+</head>
+<body>
+	<% include ./partials/menu %>
+	<div class="ui main text container segment">
+
+		<h1 class="ui centered header" id = "prompt"></h1>
+
+        <h4 class="ui horizontal inverted divider">
+            <div class="ui buttons">
+                <button class="ui green button" onclick="react(true)">Yee</button>
+                <div class="or"></div>
+                <button class="ui red button" onclick="react(false)">Naw</button>
+            </div>	
+        </h4>
+        <img class="ui fluid image" id = "memeimage"src="">
+
+        
+	</div>			
+
+
+    
+<% include ./partials/footer %>

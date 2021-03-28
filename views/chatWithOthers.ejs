@@ -1,0 +1,44 @@
+<% include ./partials/header %>
+	
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+<body>
+	<% include ./partials/menu %>
+	<div class="ui main text container segment">
+
+		<h1 class="ui header">Talk to others!</h1>
+
+		<h3 class="invisible">You are chatting with: <span id="name"></span></h3>
+
+		<p class="invisible" id="waiting">Please be patient, you are on a waiting list to be paired in conversation with somone else.</p>
+
+		<div id="disconnectedForm" class="invisible">
+			<h3>Your partner has disconnected. Hit the green button to chat with someone else!</h3>
+			<div class="ui divider"></div>
+		</div>
+
+		<div class="ui form ">
+			<div class="ui fluid action input">
+				<input id="username" type="text" name="username" placeholder="Your nickname">
+				<button class="ui positive basic button">Let's go!</button>
+			</div>
+			<p>Active users: <%= activeUsers %></p>
+		</div>
+		
+
+		<!-- <div id="messageBoard" class="invisible">
+			<div class="ui middle aligned divided list" id="messages"></div>
+			<div class="ui fluid input focus" id="textDiv">
+				<input id="textBox" type="text" autocomplete="off" placeholder="Type a message here!">
+			</div>
+		</div> -->
+		
+
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+	integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+	crossorigin="anonymous"></script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+	<script type="text/javascript" src="js/conversation.js"></script>
+<% include ./partials/footer %>
