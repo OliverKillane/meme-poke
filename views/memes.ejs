@@ -24,7 +24,6 @@
 
     // update prompt
     $( document ).ready(function() {
-        document.getElementById("prompt").innerHTML = getRandomIndex(prompts)
         socket.emit("getNewMeme")
     })
 
@@ -37,7 +36,8 @@
     //USER INTERACTION:
     // set Image to url
 	socket.on('postNewMeme', function(url) {
-        console.log(url)
+        console.log(url);
+        document.getElementById("prompt").innerHTML = getRandomIndex(prompts)
         $("#memeimage").attr("src", url);
 	});
 
