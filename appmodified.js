@@ -248,13 +248,13 @@ app.get("/getNewMatch", async function(req,res){
 	var user = await User.findOne({nickname: req.auth.user})
 	var match = await findMatches(user.nickname)
 	if (match != null) {
-		user.matchedWith.push(match)
+		await user.matchedWith.push(match)
 		var matchedUser = await User.findOne({nickname: match})
 
-		matchedUser.matchedWith.push(user.nickname)
+		await matchedUser.matchedWith.push(user.nickname)
 
-		user.save();
-		matchedUser.save();
+		await user.save();
+		await matchedUser.save();
 
 		var identifier = "";
 		if (user.nickname > matchedUser.nickname) {

@@ -1,5 +1,7 @@
 <% include ./partials/header %>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/main.css">
 		<style>
 		.ui.message.partner {
 			background: #808080;
@@ -92,6 +94,7 @@
 		<!-- <link rel="stylesheet" type="text/css" href="css/main.css"> -->
 	</head>
 	<body>
+		<% include ./partials/menu %>
 		<div class="ui main text container segment">
 
 			<h1 class="ui header">Talk with others!</h1>
