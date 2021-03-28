@@ -71,11 +71,11 @@ async function findMatches(userID) {
         }
     }
     var maxUser = null;
-    let maxPoints = -10000;
+    let maxPoints = -1;
 	
 	for (var i=0; i<users.length; i++) {
 		var potentialUser = users[i]
-		var points = -1000
+		var points = 0
 		
 		//Check if users have already matched before
 		if (await containsMatch(potentialUser, user)) {
