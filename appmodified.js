@@ -32,9 +32,6 @@ app.use(basicAuth( { authorizer: myAuthorizer,
 
 
 async function containsMatch(user, other) {
-	if (typeof other == 'undefined') {
-		return true
-	}
     var identifier = "";
     if (user.nickname > other.nickname) {
         identifier = user.nickname + "/" + other.nickname
@@ -46,10 +43,16 @@ async function containsMatch(user, other) {
     return conversation != null;
 }
 
+// function in(val, list) {
+//     for (i=0; i<list.length; i++) {
+// 		if (val.imageURL == list[i].imageURL) {
+// 			return true
+// 		}
+// 	}
+//     return false;
+// }
+
 function containsMeme(val, list) {
-	if (typeof list == 'undefined') {
-		return false
-	}
     for (i=0; i<list.length; i++) {
 		if (val.imageURL == list[i].imageURL) {
 			return true
@@ -59,14 +62,13 @@ function containsMeme(val, list) {
 }
 
 async function findMatches(userID) {
-    let user = await User.find({nickname : userID});
+    var user = await User.findOne({nickname : userID});
     // let users = new Set();
     //Select 100 random users to match
-	if (typeof user == 'undefined') {
-		return true
-	}
+	// console.log("USER " + user)
+
     var users = []
-	for(let i = 0; i < 50; i++) {
+	for(let i = 0; i < 20; i++) {
         var count = await User.count()
 
 		// Get a random entry
@@ -76,59 +78,52 @@ async function findMatches(userID) {
 		var newUser = await User.findOne().skip(random)
 		// console.log(newUser.nickname)
 		// console.log(!containsMatch(newUser, users))
-		var isInList = await containsMatch(newUser, users)
-		var hasMatched = await containsMatch(newUser.nickname, user.matchedWith)
+		// var isInList = containsMeme(newUser, users)
+		var hasMatched = await containsMatch(newUser, user)
 		  
-        if (newUser.nickname != userID && !hasMatched && hasMatched) {
+        if (newUser.nickname != userID && !hasMatched) {
 				
             users.push(newUser)
         }
     }
 
-	// console.log(users)
-    var maxUser = null;
-    let maxPoints = -1;
-	
+	var maxUser = null;
+    let maxPoints = -10000;
 	
 	for (var i=0; i<users.length; i++) {
 		var potentialUser = users[i]
-		var points = 0
+		var points = -1000
 		
-		//Check if users have already matched before
-		if (await containsMatch(potentialUser, user)) {
-			console.log("already matched")
-            points = -10000;
-       	} else {
-			//Check for common liked memes
-			
-			for (var j=0; j<potentialUser.likedMemes.length; j++) {
-				// console.log(user)
-				if (containsMeme(potentialUser.likedMemes[j], user.likedMemes)) {
-					points++;
-				} else if (containsMeme(potentialUser.likedMemes[j], user.dislikedMemes)){
-					points--;
-				}
+
+		for (var j=0; j<potentialUser.likedMemes.length; j++) {
+			if (containsMeme(potentialUser.likedMemes[j], user.likedMemes)) {
+				points++;
+			} else if (containsMeme(potentialUser.likedMemes[j], user.dislikedMemes)){
+				points--;
 			}
-			//Check for common disliked memes
-			for (var j=0; j<potentialUser.dislikedMemes.length; j++) {
-				if (containsMeme(potentialUser.dislikedMemes[j], user.likedMemes)) {
-					points--;
-				} else if (containsMeme(potentialUser.dislikedMemes[j], user.dislikedMemes)){
-					points++;
-				}
+		}
+		//Check for common disliked memes
+		for (var j=0; j<potentialUser.dislikedMemes.length; j++) {
+			if (containsMeme(potentialUser.dislikedMemes[j], user.likedMemes)) {
+				points--;
+			} else if (containsMeme(potentialUser.dislikedMemes[j], user.dislikedMemes)){
+				points++;
 			}
-			//Find the user with the max amount of points
-			if (points > maxPoints) {
-				maxPoints = points;
-				maxUser = potentialUser;
-			}
-		}   
+		}
+		//Find the user with the max amount of points
+		if (points > maxPoints) {
+			maxPoints = points;
+			maxUser = potentialUser;
+		}
+		
 	}
+
 	if (maxUser == null) {
 		return null
 	} else {
-		return maxUser.nickname;
+		return maxUser.nickname
 	}
+	
    
 }
 
@@ -296,15 +291,15 @@ io.on("connection", function(socket){
     // add user to the map of active users
 	userMap.set(socket.username, socket);
 
-	console.log(socket.username + ' connected');
-	console.log(userMap)
+	// console.log(socket.username + ' connected');
+	// console.log(userMap)
 
 
 
     // PRE: the user is valid and a string
     socket.on("startDialog", async function(user){
         socket.partner = user;
-		console.log(socket.partner)
+		// console.log(socket.partner)
 
         // get the conversation        
         var identifier = "";
@@ -331,10 +326,10 @@ io.on("connection", function(socket){
 
     // PRE: msg is a String
 	socket.on("newMessage", function(msg){
-		console.log(userMap.keys())
-		console.log(socket.partner)
+		// console.log(userMap.keys())
+		// console.log(socket.partner)
         if (userMap.has(socket.partner)){
-			console.log("yay")
+			// console.log("yay")
             try {
                 userMap.get(socket.partner).emit("newMessage",msg);
             } catch {}
