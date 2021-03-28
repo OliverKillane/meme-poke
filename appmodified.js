@@ -32,6 +32,9 @@ app.use(basicAuth( { authorizer: myAuthorizer,
 
 
 async function containsMatch(user, other) {
+	if (typeof other == 'undefined') {
+		return true
+	}
     var identifier = "";
     if (user.nickname > other.nickname) {
         identifier = user.nickname + "/" + other.nickname
@@ -39,10 +42,14 @@ async function containsMatch(user, other) {
         identifier = other.nickname + "/" + user.nickname  
     }
 	var conversation = await Conversation.findOne({users : identifier})
+	// console.log(conversation)
     return conversation != null;
 }
 
 function containsMeme(val, list) {
+	if (typeof list == 'undefined') {
+		return false
+	}
     for (i=0; i<list.length; i++) {
 		if (val.imageURL == list[i].imageURL) {
 			return true
@@ -55,6 +62,9 @@ async function findMatches(userID) {
     let user = await User.find({nickname : userID});
     // let users = new Set();
     //Select 100 random users to match
+	if (typeof user == 'undefined') {
+		return true
+	}
     var users = []
 	for(let i = 0; i < 50; i++) {
         var count = await User.count()
@@ -64,18 +74,20 @@ async function findMatches(userID) {
 		  
 		// Again query all users but only fetch one offset by our random #
 		var newUser = await User.findOne().skip(random)
+		// console.log(newUser.nickname)
+		// console.log(!containsMatch(newUser, users))
+		var isInList = await containsMatch(newUser, users)
+		var hasMatched = await containsMatch(newUser.nickname, user.matchedWith)
 		  
-        if (newUser.nickname != userID && !containsMatch(newUser, users)) {
+        if (newUser.nickname != userID && !hasMatched && hasMatched) {
 				
             users.push(newUser)
         }
     }
+
+	// console.log(users)
     var maxUser = null;
     let maxPoints = -1;
-
-	if (typeof user == 'undefined') {
-		return null
-	}
 	
 	
 	for (var i=0; i<users.length; i++) {
@@ -90,7 +102,7 @@ async function findMatches(userID) {
 			//Check for common liked memes
 			
 			for (var j=0; j<potentialUser.likedMemes.length; j++) {
-				console.log(user)
+				// console.log(user)
 				if (containsMeme(potentialUser.likedMemes[j], user.likedMemes)) {
 					points++;
 				} else if (containsMeme(potentialUser.likedMemes[j], user.dislikedMemes)){
